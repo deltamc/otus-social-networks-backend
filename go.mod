@@ -1,4 +1,4 @@
-module https: //github.com/deltamc/otus-social-networks-backend
+module github.com/deltamc/otus-social-networks-backend
 
 go 1.13
 
