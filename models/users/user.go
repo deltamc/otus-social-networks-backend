@@ -33,8 +33,8 @@ func (u *User) Save() (lastID int64, err error)  {
 	
 	stmt, err := db.OpenDB().Prepare(
 		"INSERT INTO " +
-			"`users` (`login`, `password`, `first_name`, `last_name`, `age`, `sex`, `interests`, `city`) " +
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+			"`users` (`id`, login`, `password`, `first_name`, `last_name`, `age`, `sex`, `interests`, `city`) " +
+			"VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return
 	}
