@@ -14,7 +14,7 @@ CREATE TABLE `friends` (
 --
 
 CREATE TABLE `users` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) AUTOINCREMENT PRIMARY KEY,
   `login` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `first_name` varchar(255) NOT NULL,
@@ -40,5 +40,6 @@ ALTER TABLE `friends`
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `login` (`login`);
+
+
