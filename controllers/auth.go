@@ -38,7 +38,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	user.HashedPass()
 
-	_, err := user.Save()
+	_, err := user.New()
 
 	if nerr, ok := err.(*mysql.MySQLError); ok && nerr.Number == db.ERROR_DUPLICATE_ENTRY {
 		res := map[string][]string{
@@ -116,4 +116,7 @@ func HandleRefresh(w http.ResponseWriter, r *http.Request, user users.User) {
 		responses.Response500(w, err)
 		return
 	}
+}
+func HandleLogout(w http.ResponseWriter, r *http.Request, user users.User) {
+	//@todo занести jwt токен в blacklist
 }

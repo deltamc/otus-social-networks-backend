@@ -29,9 +29,11 @@ func (u *User) HashedPass() error{
 	return nil
 }
 
-func (u *User) Save() (lastID int64, err error)  {
+func (u *User) New() (lastID int64, err error)  {
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
 	
-	stmt, err := db.OpenDB().Prepare(
+	stmt, err := dbPull.Prepare(
 		"INSERT INTO " +
 			"`users` (`login`, `password`, `first_name`, `last_name`, `age`, `sex`, `interests`, `city`) " +
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
@@ -56,7 +58,29 @@ func (u *User) Save() (lastID int64, err error)  {
 	return
 }
 
+func (u *User) Save() (err error)  {
+
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
+
+	stmt, err := dbPull.Prepare(`UPDATE users SET first_name = ?, last_name = ?, age =?, sex =?, interests=?, city=? WHERE id=?`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(u.FirstName, u.LastName, u.Age, u.Sex, u.Interests, u.City, u.Id)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (u *User) GetFriends() (friends []User, err error)  {
+
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
 	
 	sqlStmt := `SELECT 
 					users.id, login, first_name, last_name, age, sex, interests, city
@@ -68,7 +92,7 @@ func (u *User) GetFriends() (friends []User, err error)  {
 				ORDER BY 
 					users.id DESC`
 
-	rows, err := db.OpenDB().Query(sqlStmt, u.Id)
+	rows, err := dbPull.Query(sqlStmt, u.Id)
 
 
 	if err != nil {
@@ -100,13 +124,15 @@ func (u *User) GetFriends() (friends []User, err error)  {
 }
 
 func (u *User) MakeFriend (userId int64) (err error)  {
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
 	
 	if userId == u.Id {
 		err = errors.New(ERROR_FRIENDS_WITH_YOURSELF)
 		return
 	}
 
-	stmt, err := db.OpenDB().Prepare(
+	stmt, err := dbPull.Prepare(
 		`INSERT INTO friends (user_id, friend_id) VALUES (?, ?)`)
 	if err != nil {
 		return
@@ -124,7 +150,11 @@ func (u *User) MakeFriend (userId int64) (err error)  {
 
 
 func GetUserByLogin (login string) (user User, err error) {
-	
+
+
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
+
 	sqlStmt := `SELECT 
 					*
 				FROM 
@@ -133,7 +163,7 @@ func GetUserByLogin (login string) (user User, err error) {
 					login = ?`
 
 	// Prepare statement
-	stmt, err := db.OpenDB().Prepare(sqlStmt)
+	stmt, err := dbPull.Prepare(sqlStmt)
 	if err != nil {
 		return
 	}
@@ -154,6 +184,8 @@ func GetUserByLogin (login string) (user User, err error) {
 }
 
 func GetUserById (id int64) (user User, err error) {
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
 
 	sqlStmt := `SELECT 
 					*
@@ -163,7 +195,7 @@ func GetUserById (id int64) (user User, err error) {
 					id = ?`
 
 	// Prepare statement
-	stmt, err := db.OpenDB().Prepare(sqlStmt)
+	stmt, err := dbPull.Prepare(sqlStmt)
 	if err != nil {
 		return
 	}
@@ -186,6 +218,9 @@ func GetUserById (id int64) (user User, err error) {
 
 func GetUsers() (users []User, err error) {
 
+	dbPull := db.OpenDB()
+	defer dbPull.Close()
+
 	sqlStmt := `SELECT 
 					id, login, first_name, last_name, age, sex, interests, city
 				FROM 
@@ -194,7 +229,7 @@ func GetUsers() (users []User, err error) {
 					id DESC`
 
 	// Prepare statement
-	rows, err := db.OpenDB().Query(sqlStmt)
+	rows, err := dbPull.Query(sqlStmt)
 
 
 	if err != nil {
@@ -222,8 +257,6 @@ func GetUsers() (users []User, err error) {
 
 		users = append(users, user)
 	}
-
-
 	return
 }
 

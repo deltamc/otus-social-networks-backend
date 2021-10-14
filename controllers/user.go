@@ -33,6 +33,32 @@ func HandleFriends(w http.ResponseWriter, r *http.Request, user users.User) {
 	responses.ResponseJson(w, userList)
 }
 
+func HandleProfile(w http.ResponseWriter, r *http.Request, user users.User) {
+	v := govalidator.New(requests.Profile(r))
+	e := v.Validate()
+	if len(e) > 0 {
+		responses.Response422(w, e)
+		return
+	}
+
+	age, _ := strconv.ParseInt(r.FormValue("age"), 10, 64)
+	sex, _ := strconv.ParseInt(r.FormValue("sex"), 10, 64)
+
+	user.FirstName =  r.FormValue("first_name")
+	user.LastName =  r.FormValue("last_name")
+	user.Interests =  r.FormValue("interests")
+	user.City =  r.FormValue("city")
+	user.Age =  age
+	user.Sex =  sex
+
+	err := user.Save()
+	if err != nil {
+		responses.Response500(w, err)
+		return
+	}
+
+}
+
 func HandleMakeFriend(w http.ResponseWriter, r *http.Request, user users.User) {
 
 	v := govalidator.New(requests.MakeFriend(r))
@@ -68,5 +94,7 @@ func HandleMakeFriend(w http.ResponseWriter, r *http.Request, user users.User) {
 	return
 
 }
+
+
 
 
