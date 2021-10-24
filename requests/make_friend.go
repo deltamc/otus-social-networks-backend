@@ -7,7 +7,7 @@ import (
 
 func MakeFriend(r *http.Request) govalidator.Options {
 	rules := govalidator.MapData{
-		"user_id": []string{"required"},
+		"user_id": []string{"required", "numeric"},
 
 	}
 
