@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"time"
 )
-var dbPull *sql.DB
+var dbPool *sql.DB
 
 const ERROR_DUPLICATE_ENTRY  = 1062
 
 func OpenDB() *sql.DB {
 
-	//if dbPull != nil {
-	//	return dbPull
+	//if dbPool != nil {
+	//	return dbPool
 	//}
 
 	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
@@ -26,7 +26,7 @@ func OpenDB() *sql.DB {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_DATABASE"))
 	var err error
-	dbPull, err = sql.Open("mysql", dataSource)
+	dbPool, err = sql.Open("mysql", dataSource)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -48,23 +48,23 @@ func OpenDB() *sql.DB {
 		fmt.Println(fmt.Sprintf("SQL_MAX_LIFE_CONNECT, %s", err.Error()))
 	}
 
-	dbPull.SetMaxIdleConns(maxIdleConns)
-	dbPull.SetMaxOpenConns(maxOpenConns)
+	dbPool.SetMaxIdleConns(maxIdleConns)
+	dbPool.SetMaxOpenConns(maxOpenConns)
 
 	lifeTime := time.Second * time.Duration(maxLifeConns)
-	dbPull.SetConnMaxLifetime(lifeTime)
+	dbPool.SetConnMaxLifetime(lifeTime)
 
-	err = dbPull.Ping()
+	err = dbPool.Ping()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	return dbPull
+	return dbPool
 }
 
 func Close() {
-	if dbPull != nil {
-		err := dbPull.Close()
+	if dbPool != nil {
+		err := dbPool.Close()
 		if err != nil {
 			fmt.Println(err.Error())
 		}

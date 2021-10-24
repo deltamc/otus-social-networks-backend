@@ -16,7 +16,13 @@ func HandleMy(w http.ResponseWriter, r *http.Request, user users.User) {
 }
 
 func HandleUsers(w http.ResponseWriter, r *http.Request) {
-	userList, err := users.GetUsers()
+
+	filter := users.Filter{
+		FirstName: r.FormValue("first_name"),
+		LastName:  r.FormValue("last_name"),
+	}
+
+	userList, err := users.GetUsers(filter)
 	if err != nil {
 		responses.Response500(w, err)
 	}
