@@ -15,9 +15,9 @@ const ERROR_DUPLICATE_ENTRY  = 1062
 
 func OpenDB() *sql.DB {
 
-	//if dbPool != nil {
-	//	return dbPool
-	//}
+	if dbPool != nil {
+		return dbPool
+	}
 
 	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		os.Getenv("DB_USERNAME"),

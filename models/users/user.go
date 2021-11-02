@@ -33,7 +33,7 @@ func (u *User) HashedPass() error{
 
 func (u *User) New() (lastID int64, err error)  {
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 	
 	stmt, err := dbPool.Prepare(
 		"INSERT INTO " +
@@ -63,7 +63,7 @@ func (u *User) New() (lastID int64, err error)  {
 func (u *User) Save() (err error)  {
 
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 
 	stmt, err := dbPool.Prepare(`UPDATE users SET first_name = ?, last_name = ?, age =?, sex =?, interests=?, city=? WHERE id=?`)
 	if err != nil {
@@ -82,7 +82,7 @@ func (u *User) Save() (err error)  {
 func (u *User) GetFriends() (friends []User, err error)  {
 
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 	
 	sqlStmt := `SELECT 
 					users.id, login, first_name, last_name, age, sex, interests, city
@@ -127,7 +127,7 @@ func (u *User) GetFriends() (friends []User, err error)  {
 
 func (u *User) MakeFriend (userId int64) (err error)  {
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 	
 	if userId == u.Id {
 		err = errors.New(ERROR_FRIENDS_WITH_YOURSELF)
@@ -155,7 +155,7 @@ func GetUserByLogin (login string) (user User, err error) {
 
 
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 
 	sqlStmt := `SELECT 
 					*
@@ -187,7 +187,7 @@ func GetUserByLogin (login string) (user User, err error) {
 
 func GetUserById (id int64) (user User, err error) {
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 
 	sqlStmt := `SELECT 
 					*
@@ -221,7 +221,7 @@ func GetUserById (id int64) (user User, err error) {
 func GetUsers(filter Filter) (users []User, err error) {
 
 	dbPool := db.OpenDB()
-	defer dbPool.Close()
+	
 
 	where, args := filter.getWhere()
 
