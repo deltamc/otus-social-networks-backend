@@ -40,7 +40,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 
 	_, err := user.New()
 
-	if nerr, ok := err.(*mysql.MySQLError); ok && nerr.Number == db.ERROR_DUPLICATE_ENTRY {
+	if nerr, ok := err.(*mysql.MySQLError); ok && nerr.Number == db.ErrorDuplicateEntry {
 		res := map[string][]string{
 			"login": []string{"The «Login» has already been taken."},
 		}

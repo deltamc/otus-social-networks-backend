@@ -83,15 +83,15 @@ func HandleMakeFriend(w http.ResponseWriter, r *http.Request, user users.User) {
 		return
 	}
 
-	if nerr, ok := err.(*mysql.MySQLError); ok && nerr.Number == db.ERROR_DUPLICATE_ENTRY {
+	if nerr, ok := err.(*mysql.MySQLError); ok && nerr.Number == db.ErrorDuplicateEntry {
 		res := map[string][]string{
 			"user_id": []string{"You are already friends"},
 		}
 		responses.Response422(w, res)
 		return
-	} else if err.Error() == users.ERROR_FRIENDS_WITH_YOURSELF {
+	} else if err.Error() == users.ErrorFriendsWithYourself {
 		res := map[string][]string{
-			"user_id": []string{users.ERROR_FRIENDS_WITH_YOURSELF},
+			"user_id": []string{users.ErrorFriendsWithYourself},
 		}
 		responses.Response422(w, res)
 		return

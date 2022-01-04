@@ -20,7 +20,7 @@ type User struct {
 
 
 
-const ERROR_FRIENDS_WITH_YOURSELF string = "You can't make friends with yourself"
+const ErrorFriendsWithYourself string = "You can't make friends with yourself"
 
 func (u *User) HashedPass() error{
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
@@ -32,7 +32,7 @@ func (u *User) HashedPass() error{
 }
 
 func (u *User) New() (lastID int64, err error)  {
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.MasterName)
 	
 	
 	stmt, err := dbPool.Prepare(
@@ -62,7 +62,7 @@ func (u *User) New() (lastID int64, err error)  {
 
 func (u *User) Save() (err error)  {
 
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.MasterName)
 	
 
 	stmt, err := dbPool.Prepare(`UPDATE users SET first_name = ?, last_name = ?, age =?, sex =?, interests=?, city=? WHERE id=?`)
@@ -81,7 +81,7 @@ func (u *User) Save() (err error)  {
 
 func (u *User) GetFriends() (friends []User, err error)  {
 
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.Slave1Name)
 	
 	
 	sqlStmt := `SELECT 
@@ -126,11 +126,11 @@ func (u *User) GetFriends() (friends []User, err error)  {
 }
 
 func (u *User) MakeFriend (userId int64) (err error)  {
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.MasterName)
 	
 	
 	if userId == u.Id {
-		err = errors.New(ERROR_FRIENDS_WITH_YOURSELF)
+		err = errors.New(ErrorFriendsWithYourself)
 		return
 	}
 
@@ -154,7 +154,7 @@ func (u *User) MakeFriend (userId int64) (err error)  {
 func GetUserByLogin (login string) (user User, err error) {
 
 
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.Slave1Name)
 	
 
 	sqlStmt := `SELECT 
@@ -186,7 +186,7 @@ func GetUserByLogin (login string) (user User, err error) {
 }
 
 func GetUserById (id int64) (user User, err error) {
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.Slave1Name)
 	
 
 	sqlStmt := `SELECT 
@@ -220,7 +220,7 @@ func GetUserById (id int64) (user User, err error) {
 
 func GetUsers(filter Filter) (users []User, err error) {
 
-	dbPool := db.OpenDB()
+	dbPool := db.OpenDB(db.Slave1Name)
 	
 
 	where, args := filter.getWhere()

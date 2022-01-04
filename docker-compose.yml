@@ -1,0 +1,71 @@
+version: "3"
+services:
+  mysql:
+    image: 'percona:8.0'
+    container_name: db-master
+    volumes:
+      - ./build_env/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+
+  mysqlread1:
+    image: 'percona:8.0'
+    container_name: db-slave1
+    volumes:
+      - ./build_env/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+
+  mysqlread2:
+    image: 'percona:8.0'
+    container_name: db-slave2
+
+    volumes:
+      - ./build_env/mysql/slave2.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+    depends_on:
+      - mysqlread1
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+
+  social-networks:
+    build: ./
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./:/app
+    depends_on:
+      - mysql
+      - mysqlread1
+      - mysqlread2
+    environment:
+      - PORT=8888
+      - RUN_IN_DOCKER=1
+
+      - DB_MASTER_HOST=mysql
+      - DB_MASTER_PORT=3306
+      - DB_MASTER_DATABASE=go-site
+      - DB_MASTER_USERNAME=root
+      - DB_MASTER_PASSWORD=secret
+
+      - DB_SLAVE1_HOST=mysqlread1
+      - DB_SLAVE1_PORT=3306
+      - DB_SLAVE1_DATABASE=go-site
+      - DB_SLAVE1_USERNAME=root
+      - DB_SLAVE1_PASSWORD=secret
+
+      - DB_SLAVE2_HOST=mysqlread2
+      - DB_SLAVE2_PORT=3306
+      - DB_SLAVE2_DATABASE=go-site
+      - DB_SLAVE2_USERNAME=root
+      - DB_SLAVE2_PASSWORD=secret
+
+      - SQL_MAX_OPEN_CONNECT=5
+      - SQL_MAX_IDLE_CONNECT=5
+      - SQL_MAX_LIFE_CONNECT=3600
+      - SECRET_KEY=54325432fds542543a
+      - JWT_TOKEN_EXPIRES_MINUTE=50

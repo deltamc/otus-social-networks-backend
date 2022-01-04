@@ -9,7 +9,9 @@ import (
 )
 
 func init() {
-
+	if  len(os.Getenv("RUN_IN_DOCKER")) > 0 {
+		return
+	}
 	err := godotenv.Load(".env")
 
 	if err != nil {

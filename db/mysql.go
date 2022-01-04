@@ -7,26 +7,32 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
-var dbPool *sql.DB
+var dbPool  = map[string]*sql.DB{}
 
-const ERROR_DUPLICATE_ENTRY  = 1062
 
-func OpenDB() *sql.DB {
+const ErrorDuplicateEntry = 1062
+const MasterName = "master"
+const Slave1Name = "slave1"
+const Slave2Name = "slave2"
 
-	if dbPool != nil {
-		return dbPool
+func OpenDB(name string) *sql.DB {
+
+	if _, ok := dbPool[name]; ok {
+		return dbPool[name]
 	}
-
+	nameForEnv := strings.ToUpper(name)
+	fmt.Println("DB_"+ nameForEnv +"_HOST")
 	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_DATABASE"))
+		os.Getenv("DB_"+ nameForEnv +"_USERNAME"),
+		os.Getenv("DB_"+ nameForEnv +"_PASSWORD"),
+		os.Getenv("DB_"+ nameForEnv +"_HOST"),
+		os.Getenv("DB_"+ nameForEnv +"_PORT"),
+		os.Getenv("DB_"+ nameForEnv +"_DATABASE"))
 	var err error
-	dbPool, err = sql.Open("mysql", dataSource)
+	dbPool[name], err = sql.Open("mysql", dataSource)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -48,23 +54,23 @@ func OpenDB() *sql.DB {
 		fmt.Println(fmt.Sprintf("SQL_MAX_LIFE_CONNECT, %s", err.Error()))
 	}
 
-	dbPool.SetMaxIdleConns(maxIdleConns)
-	dbPool.SetMaxOpenConns(maxOpenConns)
+	dbPool[name].SetMaxIdleConns(maxIdleConns)
+	dbPool[name].SetMaxOpenConns(maxOpenConns)
 
 	lifeTime := time.Second * time.Duration(maxLifeConns)
-	dbPool.SetConnMaxLifetime(lifeTime)
+	dbPool[name].SetConnMaxLifetime(lifeTime)
 
-	err = dbPool.Ping()
+	err = dbPool[name].Ping()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	return dbPool
+	return dbPool[name]
 }
 
-func Close() {
-	if dbPool != nil {
-		err := dbPool.Close()
+func Close(name string) {
+	if _, ok := dbPool[name]; ok && dbPool[name] != nil {
+		err := dbPool[name].Close()
 		if err != nil {
 			fmt.Println(err.Error())
 		}
