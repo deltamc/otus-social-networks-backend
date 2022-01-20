@@ -37,6 +37,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request, user users.User) {
 	err = rmq.Connect()
 	if err != nil{
 		responses.Response500(w, err)
+		return
 	}
 	defer rmq.Close()
 
