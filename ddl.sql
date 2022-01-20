@@ -27,6 +27,14 @@ CREATE TABLE `users` (
   `city` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE `posts` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `body` text NOT NULL,
+  `created_at` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Индексы сохранённых таблиц
 --
@@ -37,6 +45,10 @@ CREATE TABLE `users` (
 ALTER TABLE `friends`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`friend_id`);
+
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`id`);
+
 
 --
 -- Индексы таблицы `users`
@@ -58,6 +70,9 @@ ALTER TABLE `friends`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+  ALTER TABLE `posts`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 COMMIT;

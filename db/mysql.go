@@ -14,9 +14,11 @@ var dbPool *sql.DB
 const ERROR_DUPLICATE_ENTRY  = 1062
 
 func OpenDB() *sql.DB {
-
 	if dbPool != nil {
-		return dbPool
+		err := dbPool.Ping()
+		if err == nil {
+			return dbPool
+		}
 	}
 
 	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
