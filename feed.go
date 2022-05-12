@@ -29,7 +29,6 @@ func main() {
 		return
 	}
 
-	//обновляем кэш если опубликовали новый пост
 	rmq := queue.NewRabbitMQ()
 
 	err = rmq.Connect()
