@@ -4,38 +4,67 @@ services:
     image: 'percona:8.0'
     container_name: db-master
     volumes:
-      - ./build_env/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
-      - ./build_env/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./config/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
+      - ./config/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
     environment:
       MYSQL_ROOT_PASSWORD: "secret"
+    ports:
+      - "3307:3306"
 
   mysqlread1:
     image: 'percona:8.0'
     container_name: db-slave1
     volumes:
-      - ./build_env/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
-      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./config/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
+      - ./config/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
     depends_on:
       - mysql
     environment:
       MYSQL_ROOT_PASSWORD: "secret"
+    ports:
+      - "3308:3306"
 
   mysqlread2:
     image: 'percona:8.0'
     container_name: db-slave2
 
     volumes:
-      - ./build_env/mysql/slave2.cnf:/etc/my.cnf.d/repl.cnf
-      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./config/mysql/slave2.cnf:/etc/my.cnf.d/repl.cnf
+      - ./config/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
     depends_on:
       - mysqlread1
     environment:
       MYSQL_ROOT_PASSWORD: "secret"
+    ports:
+      - "3309:3306"
+
+  nginx:
+    image: nginx:1.19.0
+    container_name: nginx-lb
+    restart: on-failure
+    volumes:
+      - "./config/nginx.conf:/etc/nginx/conf.d/default.conf"
+    ports:
+      - "8082:80"
+      - "8888:8888"
+
+#  haproxy:
+#    image: haproxy:2.1.7
+#    container_name: haproxy-lb
+#    restart: "no"
+#    depends_on:
+#      - mysqlread1
+#      - mysqlread2
+#    volumes:
+#      - "./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+#    ports:
+#      - "3306:3306"
+#      - "8404:8404"
 
   social-networks:
     build: ./
-    ports:
-      - '8888:8888'
+#    ports:
+#      - '8089:8089'
     volumes:
       - ./:/app
     depends_on:
@@ -43,8 +72,9 @@ services:
       - mysqlread1
       - mysqlread2
     environment:
-      - PORT=8888
+      - PORT=8099
       - RUN_IN_DOCKER=1
+      - SERVICE_NAME=social-networks
 
       - DB_MASTER_HOST=mysql
       - DB_MASTER_PORT=3306
@@ -58,11 +88,38 @@ services:
       - DB_SLAVE1_USERNAME=root
       - DB_SLAVE1_PASSWORD=secret
 
-      - DB_SLAVE2_HOST=mysqlread2
-      - DB_SLAVE2_PORT=3306
-      - DB_SLAVE2_DATABASE=go-site
-      - DB_SLAVE2_USERNAME=root
-      - DB_SLAVE2_PASSWORD=secret
+      - SQL_MAX_OPEN_CONNECT=5
+      - SQL_MAX_IDLE_CONNECT=5
+      - SQL_MAX_LIFE_CONNECT=3600
+      - SECRET_KEY=54325432fds542543a
+      - JWT_TOKEN_EXPIRES_MINUTE=50
+
+  social-networks2:
+    build: ./
+#    ports:
+#      - '8099:8099'
+    volumes:
+      - ./:/app
+    depends_on:
+      - mysql
+      - mysqlread1
+      - mysqlread2
+    environment:
+      - PORT=8099
+      - RUN_IN_DOCKER=1
+      - SERVICE_NAME=social-networks2
+
+      - DB_MASTER_HOST=mysql
+      - DB_MASTER_PORT=3306
+      - DB_MASTER_DATABASE=go-site
+      - DB_MASTER_USERNAME=root
+      - DB_MASTER_PASSWORD=secret
+
+      - DB_SLAVE1_HOST=mysqlread1
+      - DB_SLAVE1_PORT=3306
+      - DB_SLAVE1_DATABASE=go-site
+      - DB_SLAVE1_USERNAME=root
+      - DB_SLAVE1_PASSWORD=secret
 
       - SQL_MAX_OPEN_CONNECT=5
       - SQL_MAX_IDLE_CONNECT=5
