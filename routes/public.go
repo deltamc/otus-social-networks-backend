@@ -12,4 +12,5 @@ func Public() {
 	http.HandleFunc("/sign-up", m.Cors(m.Post(c.HandleSignUp)))
 	http.HandleFunc("/sign-in", m.Cors(m.Post(c.HandleSignIn)))
 	http.HandleFunc("/users", m.Cors(m.Get(c.HandleUsers)))
+	http.HandleFunc("/gen-user", m.Cors(m.Post(c.HandleGenUser)))
 }

@@ -23,6 +23,7 @@ func OpenDB(name string) *sql.DB {
 	if _, ok := dbPool[name]; ok {
 		return dbPool[name]
 	}
+
 	nameForEnv := strings.ToUpper(name)
 	fmt.Println("DB_"+ nameForEnv +"_HOST")
 	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",

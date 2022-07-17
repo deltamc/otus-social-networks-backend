@@ -1,2 +1,6 @@
 [mysqld]
-server-id=2
+server-id=4
+log-bin
+gtid_mode=ON
+binlog_format=ROW
+enforce-gtid-consistency

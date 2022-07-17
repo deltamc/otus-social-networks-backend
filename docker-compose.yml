@@ -3,6 +3,7 @@ services:
   mysql:
     image: 'percona:8.0'
     container_name: db-master
+
     volumes:
       - ./config/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
       - ./config/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
@@ -14,9 +15,11 @@ services:
   mysqlread1:
     image: 'percona:8.0'
     container_name: db-slave1
+
     volumes:
-      - ./config/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
-      - ./config/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./config/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
+      - ./config/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./config/mysql/auto.cnf:/var/lib/mysql/auto.cnf
     depends_on:
       - mysql
     environment:
@@ -63,8 +66,8 @@ services:
 
   social-networks:
     build: ./
-#    ports:
-#      - '8089:8089'
+    ports:
+      - '8089:8099'
     volumes:
       - ./:/app
     depends_on:
@@ -88,41 +91,50 @@ services:
       - DB_SLAVE1_USERNAME=root
       - DB_SLAVE1_PASSWORD=secret
 
-      - SQL_MAX_OPEN_CONNECT=5
-      - SQL_MAX_IDLE_CONNECT=5
-      - SQL_MAX_LIFE_CONNECT=3600
-      - SECRET_KEY=54325432fds542543a
-      - JWT_TOKEN_EXPIRES_MINUTE=50
-
-  social-networks2:
-    build: ./
-#    ports:
-#      - '8099:8099'
-    volumes:
-      - ./:/app
-    depends_on:
-      - mysql
-      - mysqlread1
-      - mysqlread2
-    environment:
-      - PORT=8099
-      - RUN_IN_DOCKER=1
-      - SERVICE_NAME=social-networks2
-
-      - DB_MASTER_HOST=mysql
-      - DB_MASTER_PORT=3306
-      - DB_MASTER_DATABASE=go-site
-      - DB_MASTER_USERNAME=root
-      - DB_MASTER_PASSWORD=secret
-
-      - DB_SLAVE1_HOST=mysqlread1
-      - DB_SLAVE1_PORT=3306
-      - DB_SLAVE1_DATABASE=go-site
-      - DB_SLAVE1_USERNAME=root
-      - DB_SLAVE1_PASSWORD=secret
+      - DB_SLAVE2_HOST=mysqlread2
+      - DB_SLAVE2_PORT=3306
+      - DB_SLAVE2_DATABASE=go-site
+      - DB_SLAVE2_USERNAME=root
+      - DB_SLAVE2_PASSWORD=secret
 
       - SQL_MAX_OPEN_CONNECT=5
       - SQL_MAX_IDLE_CONNECT=5
       - SQL_MAX_LIFE_CONNECT=3600
       - SECRET_KEY=54325432fds542543a
       - JWT_TOKEN_EXPIRES_MINUTE=50
+      - FIRST_NAME_FILE=./data/first_names.txt
+      - LAST_NAME_FILE=./data/last_names.txt
+      - LOG_FILE=./data/log.txt
+
+#  social-networks2:
+#    build: ./
+##    ports:
+##      - '8099:8099'
+#    volumes:
+#      - ./:/app
+#    depends_on:
+#      - mysql
+#      - mysqlread1
+#      - mysqlread2
+#    environment:
+#      - PORT=8099
+#      - RUN_IN_DOCKER=1
+#      - SERVICE_NAME=social-networks2
+#
+#      - DB_MASTER_HOST=mysql
+#      - DB_MASTER_PORT=3306
+#      - DB_MASTER_DATABASE=go-site
+#      - DB_MASTER_USERNAME=root
+#      - DB_MASTER_PASSWORD=secret
+#
+#      - DB_SLAVE1_HOST=mysqlread1
+#      - DB_SLAVE1_PORT=3306
+#      - DB_SLAVE1_DATABASE=go-site
+#      - DB_SLAVE1_USERNAME=root
+#      - DB_SLAVE1_PASSWORD=secret
+#
+#      - SQL_MAX_OPEN_CONNECT=5
+#      - SQL_MAX_IDLE_CONNECT=5
+#      - SQL_MAX_LIFE_CONNECT=3600
+#      - SECRET_KEY=54325432fds542543a
+#      - JWT_TOKEN_EXPIRES_MINUTE=50

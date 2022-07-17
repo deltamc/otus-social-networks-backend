@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/deltamc/otus-social-networks-backend/db"
+	"github.com/deltamc/otus-social-networks-backend/logger"
 	"github.com/deltamc/otus-social-networks-backend/models/users"
 	"github.com/deltamc/otus-social-networks-backend/requests"
 	"github.com/deltamc/otus-social-networks-backend/responses"
@@ -37,6 +38,25 @@ func HandleFriends(w http.ResponseWriter, r *http.Request, user users.User) {
 		return
 	}
 	responses.ResponseJson(w, userList)
+}
+var successCount int
+var totalCount int
+
+func HandleGenUser(w http.ResponseWriter, r *http.Request) {
+	totalCount++
+	user := users.GetUserRnd()
+	_, err := user.New()
+	if err == nil {
+		successCount++
+	}
+
+	logger.Log.Printf(`Записано успешно: %d  Всего: %d`, successCount, totalCount)
+
+	if err != nil {
+		responses.Response500(w, err)
+		return
+	}
+	responses.ResponseJson(w, user)
 }
 
 func HandleProfile(w http.ResponseWriter, r *http.Request, user users.User) {
