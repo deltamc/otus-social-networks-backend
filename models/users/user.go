@@ -7,22 +7,20 @@ import (
 )
 
 type User struct {
-	Id int64 `db:"id" json:"id"`
-	Login string `db:"login" json:"login"`
-	Password string `db:"password" json:"-"`
+	Id        int64  `db:"id" json:"id"`
+	Login     string `db:"login" json:"login"`
+	Password  string `db:"password" json:"-"`
 	FirstName string `db:"first_name" json:"first_name"`
-	LastName string `db:"last_name" json:"last_name"`
-	Age int64 `db:"age" json:"age"`
-	Sex int64 `db:"sex" json:"sex"`
+	LastName  string `db:"last_name" json:"last_name"`
+	Age       int64  `db:"age" json:"age"`
+	Sex       int64  `db:"sex" json:"sex"`
 	Interests string `db:"interests" json:"interests"`
-	City string `db:"city" json:"city"`
+	City      string `db:"city" json:"city"`
 }
-
-
 
 const ERROR_FRIENDS_WITH_YOURSELF string = "You can't make friends with yourself"
 
-func (u *User) HashedPass() error{
+func (u *User) HashedPass() error {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -31,10 +29,9 @@ func (u *User) HashedPass() error{
 	return nil
 }
 
-func (u *User) New() (lastID int64, err error)  {
+func (u *User) New() (lastID int64, err error) {
 	dbPool := db.OpenDB()
-	
-	
+
 	stmt, err := dbPool.Prepare(
 		"INSERT INTO " +
 			"`users` (`login`, `password`, `first_name`, `last_name`, `age`, `sex`, `interests`, `city`) " +
@@ -43,7 +40,6 @@ func (u *User) New() (lastID int64, err error)  {
 		return
 	}
 	defer stmt.Close()
-
 
 	res, err := stmt.Exec(u.Login, u.Password, u.FirstName, u.LastName, u.Age, u.Sex, u.Interests, u.City)
 	if err != nil {
@@ -60,10 +56,9 @@ func (u *User) New() (lastID int64, err error)  {
 	return
 }
 
-func (u *User) Save() (err error)  {
+func (u *User) Save() (err error) {
 
 	dbPool := db.OpenDB()
-	
 
 	stmt, err := dbPool.Prepare(`UPDATE users SET first_name = ?, last_name = ?, age =?, sex =?, interests=?, city=? WHERE id=?`)
 	if err != nil {
@@ -79,11 +74,10 @@ func (u *User) Save() (err error)  {
 	return
 }
 
-func (u *User) GetFriends() (friends []User, err error)  {
+func (u *User) GetFriends() (friends []User, err error) {
 
 	dbPool := db.OpenDB()
-	
-	
+
 	sqlStmt := `SELECT 
 					users.id, login, first_name, last_name, age, sex, interests, city
 				FROM 
@@ -95,7 +89,6 @@ func (u *User) GetFriends() (friends []User, err error)  {
 					users.id DESC`
 
 	rows, err := dbPool.Query(sqlStmt, u.Id)
-
 
 	if err != nil {
 		return
@@ -125,10 +118,53 @@ func (u *User) GetFriends() (friends []User, err error)  {
 	return
 }
 
-func (u *User) MakeFriend (userId int64) (err error)  {
+func (u *User) GetFlowers() (flowers []User, err error) {
+
 	dbPool := db.OpenDB()
-	
-	
+
+	sqlStmt := `SELECT 
+					users.id, login, first_name, last_name, age, sex, interests, city
+				FROM 
+					friends 
+					LEFT JOIN users ON users.id = friends.user_id
+				WHERE 
+					friends.friend_id = ? 
+				ORDER BY 
+					users.id DESC`
+
+	rows, err := dbPool.Query(sqlStmt, u.Id)
+
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var user User
+
+		err = rows.Scan(
+			&user.Id,
+			&user.Login,
+			&user.FirstName,
+			&user.LastName,
+			&user.Age,
+			&user.Sex,
+			&user.Interests,
+			&user.City)
+
+		flowers = append(flowers, user)
+	}
+	if err = rows.Err(); err != nil {
+		return
+	}
+
+	return
+}
+
+func (u *User) MakeFriend(userId int64) (err error) {
+	dbPool := db.OpenDB()
+
 	if userId == u.Id {
 		err = errors.New(ERROR_FRIENDS_WITH_YOURSELF)
 		return
@@ -141,7 +177,6 @@ func (u *User) MakeFriend (userId int64) (err error)  {
 	}
 	defer stmt.Close()
 
-
 	_, err = stmt.Exec(u.Id, userId)
 	if err != nil {
 		return
@@ -150,12 +185,9 @@ func (u *User) MakeFriend (userId int64) (err error)  {
 	return
 }
 
-
-func GetUserByLogin (login string) (user User, err error) {
-
+func GetUserByLogin(login string) (user User, err error) {
 
 	dbPool := db.OpenDB()
-	
 
 	sqlStmt := `SELECT 
 					*
@@ -185,9 +217,8 @@ func GetUserByLogin (login string) (user User, err error) {
 	return
 }
 
-func GetUserById (id int64) (user User, err error) {
+func GetUserById(id int64) (user User, err error) {
 	dbPool := db.OpenDB()
-	
 
 	sqlStmt := `SELECT 
 					*
@@ -202,7 +233,7 @@ func GetUserById (id int64) (user User, err error) {
 		return
 	}
 	defer stmt.Close()
-	
+
 	err = stmt.QueryRow(id).Scan(
 		&user.Id,
 		&user.Login,
@@ -217,11 +248,9 @@ func GetUserById (id int64) (user User, err error) {
 	return
 }
 
-
 func GetUsers(filter Filter) (users []User, err error) {
 
 	dbPool := db.OpenDB()
-	
 
 	where, args := filter.getWhere()
 
@@ -229,7 +258,7 @@ func GetUsers(filter Filter) (users []User, err error) {
 					id, login, first_name, last_name, age, sex, interests, city
 				FROM 
 					users 
-					`+ where +`
+					` + where + `
 				ORDER BY 
 					id DESC`
 
@@ -243,7 +272,7 @@ func GetUsers(filter Filter) (users []User, err error) {
 	if err != nil {
 		return
 	}
-	
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -267,4 +296,3 @@ func GetUsers(filter Filter) (users []User, err error) {
 	}
 	return
 }
-

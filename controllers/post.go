@@ -11,8 +11,6 @@ import (
 	"os"
 )
 
-
-
 func HandlePost(w http.ResponseWriter, r *http.Request, user users.User) {
 	v := govalidator.New(requests.Post(r))
 	e := v.Validate()
@@ -24,34 +22,36 @@ func HandlePost(w http.ResponseWriter, r *http.Request, user users.User) {
 	body := r.FormValue("body")
 
 	p := post.Post{
-		Body:body,
-		UserId:user.Id,
+		Body:     body,
+		UserId:   user.Id,
+		UserName: user.FirstName + " " + user.LastName,
 	}
 
-	_,err := p.New()
-	if err != nil{
+	_, err := p.New()
+	if err != nil {
 		responses.Response500(w, err)
 		return
 	}
 	rmq := queue.NewRabbitMQ()
 	err = rmq.Connect()
-	if err != nil{
+	if err != nil {
 		responses.Response500(w, err)
 		return
 	}
 	defer rmq.Close()
 
-
 	err = rmq.Push(os.Getenv("RABBITMQ_QUEQE_FEED"), p)
 
-	if err != nil{
+	if err != nil {
+		responses.Response500(w, err)
+		return
+	}
+
+	err = rmq.Push(os.Getenv("RABBITMQ_QUEQE_FEED_WS"), p)
+
+	if err != nil {
 		responses.Response500(w, err)
 		return
 	}
 
 }
-
-
-
-
-
