@@ -17,7 +17,7 @@ s:format({
          {name = 'age', type = 'unsigned'},
          {name = 'sex', type = 'unsigned'},
          {name = 'interests', type = 'string'},
-         {name = 'city', type = 'string'},
+         {name = 'city', type = 'string'}
          })
 
 s:create_index('primary', {
@@ -29,7 +29,7 @@ s:create_index(
         {
             type = 'tree',
             unique = false,
-            parts = {'first_name', 'last_name', 'rubric_id'}
+            parts = {'first_name', 'last_name'}
         }
 )
 
