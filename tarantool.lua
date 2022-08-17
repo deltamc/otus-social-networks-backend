@@ -1,8 +1,8 @@
 box.cfg{
     listen = 3301,
---     pid_file = nil,
+     pid_file = 't.log',
     background = true,
---     log_level = 5,
+     log_level = 5,
 --     memtx_memory = 512 * 1024 * 1024,
 --     memtx_max_tuple_size = 8 * 1024 * 1024
 }
