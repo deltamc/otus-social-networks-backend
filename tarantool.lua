@@ -23,7 +23,7 @@ s:create_index('primary', {
          > type = 'tree',
          > parts = {'id'}
          > })
-news:create_index(
+s:create_index(
         'secondary',
         {
             type = 'tree',
@@ -31,3 +31,6 @@ news:create_index(
             parts = {'first_name', 'last_name', 'rubric_id'}
         }
 )
+
+
+s:insert{10000000000, 'first_name', 'last_name', 25, 1, "fdsafdasfds","Moscow"}
