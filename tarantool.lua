@@ -1,14 +1,14 @@
 box.cfg{
     listen = 3301,
 --     pid_file = nil,
---     background = false,
+    background = true,
 --     log_level = 5,
 --     memtx_memory = 512 * 1024 * 1024,
 --     memtx_max_tuple_size = 8 * 1024 * 1024
 }
 
-box.schema.user.create('user', {password='password', if_not_exists=true})
-box.schema.user.grant('user', 'read,write', 'universe')
+-- box.schema.user.create('user', {password='password', if_not_exists=true})
+-- box.schema.user.grant('user', 'read,write', 'universe')
 
 s = box.schema.space.create('users')
 s:format({
