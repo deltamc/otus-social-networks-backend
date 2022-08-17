@@ -19,10 +19,11 @@ s:format({
          {name = 'interests', type = 'string'},
          {name = 'city', type = 'string'},
          })
+
 s:create_index('primary', {
-         > type = 'tree',
-         > parts = {'id'}
-         > })
+        type = 'tree',
+        parts = {'id'}
+        })
 s:create_index(
         'secondary',
         {
