@@ -1,5 +1,8 @@
 box.cfg{
     listen = 3301,
+     background = true,
+       log = '1.log',
+       pid_file = '1.pid'
 --      pid_file = 't.log',
 --     background = true,
 --      log_level = 5,
