@@ -1,6 +1,6 @@
 box.cfg{
     listen = 3301,
-     pid_file = 't.log',
+     log = 't.log',
     background = true,
      log_level = 5,
 --     memtx_memory = 512 * 1024 * 1024,
