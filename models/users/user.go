@@ -2,7 +2,9 @@ package users
 
 import (
 	"errors"
+	"fmt"
 	"github.com/deltamc/otus-social-networks-backend/db"
+	"github.com/deltamc/otus-social-networks-backend/tar"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -294,5 +296,11 @@ func GetUsers(filter Filter) (users []User, err error) {
 
 		users = append(users, user)
 	}
+	return
+}
+
+func GetUsersTarantool(filter Filter) (users []User, err error) {
+	resp, err := tar.Client("0").Call("get_users", []interface{}{filter.FirstName, filter.LastName})
+	fmt.Println(resp)
 	return
 }
