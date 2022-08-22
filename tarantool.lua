@@ -5,10 +5,10 @@ box.cfg{
 --        pid_file = '1.pid'
 }
 
-box.schema.user.create('user', {password='password', if_not_exists=true})
+box.schema.user.create('user', {password='password', if_not_exists = false})
 box.schema.user.grant('user', 'read,write,execute', 'universe')
 
-s = box.schema.space.create('users', if_not_exists=true)
+s = box.schema.space.create('users', {if_not_exists=true})
 s:format({
          {name = 'id', type = 'unsigned'},
          {name = 'first_name', type = 'string'},
@@ -30,27 +30,28 @@ s:create_index(
         {
             type = 'tree',
             unique = false,
-            parts = {'first_name', 'last_name'}
-        },
-        if_not_exists=true
+            parts = {'first_name', 'last_name'},
+            if_not_exists=true
+        }
+
 )
 s:create_index(
         'fn',
         {
             type = 'tree',
             unique = false,
-            parts = {'first_name'}
-        },
-        if_not_exists=true
+            parts = {'first_name'},
+            if_not_exists=true
+        }
 )
 s:create_index(
         'ln',
         {
             type = 'tree',
             unique = false,
-            parts = {'last_name'}
-        },
-        if_not_exists=true
+            parts = {'last_name'},
+            if_not_exists=true
+        }
 )
 --
 --
