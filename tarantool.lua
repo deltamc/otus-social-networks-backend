@@ -57,18 +57,18 @@ s:create_index(
 --
 -- s:insert{10000000000, 'first_name', 'last_name', 25, 1, 'fdsafdasfds','Moscow'}
 
--- function get_users(first_name, last_name)
---     if first_name ~= "" and last_name ~= "" then
---         return box.space.users.index.secondary:select({first_name, last_name})
---     else
---         if first_name ~= "" and last_name == "" then
---             return box.space.users.index.fn:select({first_name})
---         else
---             if first_name == "" and last_name ~= "" then
---                 return box.space.users.index.ln:select({last_name})
---             else
---                 return box.space.users:select({})
---             end
---        end
---     end
--- end
+function get_users(first_name, last_name)
+    if first_name ~= "" and last_name ~= "" then
+        return box.space.users.index.secondary:select({first_name, last_name})
+    else
+        if first_name ~= "" and last_name == "" then
+            return box.space.users.index.fn:select({first_name})
+        else
+            if first_name == "" and last_name ~= "" then
+                return box.space.users.index.ln:select({last_name})
+            else
+                return box.space.users:select({})
+            end
+       end
+    end
+end
