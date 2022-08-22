@@ -1,8 +1,8 @@
 box.cfg{
     listen = 3301,
---      background = true,
---        log = '1.log',
---        pid_file = '1.pid'
+     background = true,
+       log = '1.log',
+       pid_file = '1.pid'
 }
 
 box.schema.user.create('user', {password='password', if_not_exists = true})
