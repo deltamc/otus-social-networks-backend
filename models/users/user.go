@@ -20,6 +20,16 @@ type User struct {
 	City      string `db:"city" json:"city"`
 }
 
+type UserTarantool struct {
+	Id        int64  `db:"id" json:"id"`
+	FirstName string `db:"first_name" json:"first_name"`
+	LastName  string `db:"last_name" json:"last_name"`
+	Age       int64  `db:"age" json:"age"`
+	Sex       int64  `db:"sex" json:"sex"`
+	Interests string `db:"interests" json:"interests"`
+	City      string `db:"city" json:"city"`
+}
+
 const ERROR_FRIENDS_WITH_YOURSELF string = "You can't make friends with yourself"
 
 func (u *User) HashedPass() error {
@@ -299,12 +309,12 @@ func GetUsers(filter Filter) (users []User, err error) {
 	return
 }
 
-func GetUsersTarantool(filter Filter) (users []User, err error) {
+func GetUsersTarantool(filter Filter) (users []UserTarantool, err error) {
 	resp, err := tar.Client("0").Call("get_users", []interface{}{filter.FirstName, filter.LastName})
 	//err = tarantool_db.Client().
 	//	SelectTyped("article_rotations", "primary", 0, 1, tarantool.IterEq, []interface{}{hash}, &items)
 	for _, v := range resp.Data {
-		users = append(users, v.(User))
+		users = append(users, v.(UserTarantool))
 	}
 	fmt.Println(resp.Data)
 	return
