@@ -309,7 +309,7 @@ func GetUsers(filter Filter) (users []User, err error) {
 }
 
 func GetUsersTarantool(filter Filter) (users []UserTarantool, err error) {
-	err = tar.Client("0").Call17Typed("get_users", []interface{}{filter.FirstName, filter.LastName}, &users)
+	err = tar.Client("0").CallTyped("get_users", []interface{}{filter.FirstName, filter.LastName}, &users)
 	//err = tarantool_db.Client().
 	//	SelectTyped("article_rotations", "primary", 0, 1, tarantool.IterEq, []interface{}{hash}, &items)
 	//for _, v := range resp.Data {
