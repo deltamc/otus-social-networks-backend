@@ -20,13 +20,14 @@ type User struct {
 }
 
 type UserTarantool struct {
-	Id        uint   `db:"id" json:"id"`
-	FirstName string `db:"first_name" json:"first_name"`
-	LastName  string `db:"last_name" json:"last_name"`
-	Age       uint   `db:"age" json:"age"`
-	Sex       uint   `db:"sex" json:"sex"`
-	Interests string `db:"interests" json:"interests"`
-	City      string `db:"city" json:"city"`
+	_msgpack  struct{} `msgpack:",asArray"` //nolint: structcheck,unused
+	Id        uint     `db:"id" json:"id"`
+	FirstName string   `db:"first_name" json:"first_name"`
+	LastName  string   `db:"last_name" json:"last_name"`
+	Age       uint     `db:"age" json:"age"`
+	Sex       uint     `db:"sex" json:"sex"`
+	Interests string   `db:"interests" json:"interests"`
+	City      string   `db:"city" json:"city"`
 }
 
 const ERROR_FRIENDS_WITH_YOURSELF string = "You can't make friends with yourself"
