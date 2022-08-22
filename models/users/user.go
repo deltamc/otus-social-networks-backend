@@ -301,6 +301,11 @@ func GetUsers(filter Filter) (users []User, err error) {
 
 func GetUsersTarantool(filter Filter) (users []User, err error) {
 	resp, err := tar.Client("0").Call("get_users", []interface{}{filter.FirstName, filter.LastName})
+	//err = tarantool_db.Client().
+	//	SelectTyped("article_rotations", "primary", 0, 1, tarantool.IterEq, []interface{}{hash}, &items)
+	for _, v := range resp.Data {
+		users = append(users, v.(User))
+	}
 	fmt.Println(resp)
 	return
 }
