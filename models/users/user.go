@@ -20,11 +20,11 @@ type User struct {
 }
 
 type UserTarantool struct {
-	Id        int64  `db:"id" json:"id"`
+	Id        int32  `db:"id" json:"id"`
 	FirstName string `db:"first_name" json:"first_name"`
 	LastName  string `db:"last_name" json:"last_name"`
-	Age       int64  `db:"age" json:"age"`
-	Sex       int64  `db:"sex" json:"sex"`
+	Age       int32  `db:"age" json:"age"`
+	Sex       int32  `db:"sex" json:"sex"`
 	Interests string `db:"interests" json:"interests"`
 	City      string `db:"city" json:"city"`
 }
