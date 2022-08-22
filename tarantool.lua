@@ -36,8 +36,6 @@ box.cfg{
 --
 -- s:insert{10000000000, 'first_name', 'last_name', 25, 1, 'fdsafdasfds','Moscow'}
 
--- function get_users(first_name, last_name)
---     return box.space.users.index.secondary:select({first_name, last_name})
--- end
-
-box.space.users.index.secondary:select({})
+function get_users(first_name, last_name)
+    return box.space.users.index.secondary:select({first_name, last_name})
+end
