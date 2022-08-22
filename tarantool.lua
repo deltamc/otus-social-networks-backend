@@ -6,7 +6,7 @@ box.cfg{
 }
 
 box.schema.user.create('user', {password='password', if_not_exists = false})
-box.schema.user.grant('user', 'read,write,execute', 'universe')
+box.schema.user.grant('user', 'read,write,execute', 'universe', nil, {if_not_exists=true})
 
 s = box.schema.space.create('users', {if_not_exists=true})
 s:format({
