@@ -5,7 +5,7 @@ box.cfg{
 --        pid_file = '1.pid'
 }
 
-box.schema.user.create('user', {password='password', if_not_exists = false})
+box.schema.user.create('user', {password='password', if_not_exists = true})
 box.schema.user.grant('user', 'read,write,execute', 'universe', nil, {if_not_exists=true})
 
 s = box.schema.space.create('users', {if_not_exists=true})
