@@ -10,11 +10,11 @@ box.schema.user.grant('user', 'read,write,execute', 'universe', nil, {if_not_exi
 
 s = box.schema.space.create('users', {if_not_exists=true})
 s:format({
-         {name = 'id', type = 'unsigned'},
+         {name = 'id', type = 'integer'},
          {name = 'first_name', type = 'string'},
          {name = 'last_name', type = 'string'},
-         {name = 'age', type = 'unsigned'},
-         {name = 'sex', type = 'unsigned'},
+         {name = 'age', type = 'integer'},
+         {name = 'sex', type = 'integer'},
          {name = 'interests', type = 'string'},
          {name = 'city', type = 'string'}
          })
