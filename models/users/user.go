@@ -316,5 +316,9 @@ func GetUsersTarantool(filter Filter) (users []UserTarantool, err error) {
 	//	users = append(users, v.(UserTarantool))
 	//}
 	//fmt.Println(resp.Data)
+	if len(users) == 1 && users[0].Id == 0 {
+		users = []UserTarantool{}
+		return
+	}
 	return
 }
