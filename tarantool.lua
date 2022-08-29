@@ -8,7 +8,9 @@ box.cfg{
 box.schema.user.create('user', {password='password', if_not_exists = true})
 box.schema.user.grant('user', 'read,write,execute', 'universe', nil, {if_not_exists=true})
 
-s = box.schema.space.create('users', {if_not_exists=true})
+box.space.users:drop()
+
+s = box.schema.space.create('users', {id=9, field_count=7, if_not_exists=true})
 s:format({
          {name = 'id', type = 'integer'},
          {name = 'first_name', type = 'string'},
