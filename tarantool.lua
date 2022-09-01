@@ -55,7 +55,7 @@ s:create_index(
         }
 )
 
-box.schema.space.create('test1', {id = 512});
+box.schema.space.create('test1', {id = 512, if_not_exists=true});
 box.space.test1:create_index('primary', {
 	type = 'HASH',
 	parts = {1, 'unsigned'}
