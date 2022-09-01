@@ -57,6 +57,7 @@ s:create_index(
 --
 --
 s:insert{10000000000, 'first_name', 'last_name', 25, 1, 'fdsafdasfds','Moscow'}
+box.space._space.index.name:select{ 'users' }
 
 function get_users(first_name, last_name)
     if first_name ~= "" and last_name ~= "" then
