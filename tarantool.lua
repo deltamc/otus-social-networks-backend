@@ -54,6 +54,12 @@ s:create_index(
             if_not_exists=true
         }
 )
+
+box.schema.space.create('test1', {id = 512});
+box.space.test1:create_index('primary', {
+	type = 'HASH',
+	parts = {1, 'unsigned'}
+});
 --
 --
 s:insert{10000000000, 'first_name', 'last_name', 25, 1, 'fdsafdasfds','Moscow'}
