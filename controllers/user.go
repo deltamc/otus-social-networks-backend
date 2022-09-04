@@ -102,15 +102,8 @@ func HandleMakeFriend(w http.ResponseWriter, r *http.Request, user users.User) {
 }
 
 func HandleGenUser(w http.ResponseWriter, r *http.Request) {
-	totalCount++
 	user := users.GetUserRnd()
 	_, err := user.New()
-	if err == nil {
-		successCount++
-	}
-
-	logger.Log.Printf(`Записано успешно: %d  Всего: %d`, successCount, totalCount)
-
 	if err != nil {
 		responses.Response500(w, err)
 		return
