@@ -309,7 +309,10 @@ func GetUsers(filter Filter) (users []User, err error) {
 }
 
 func GetUsersTarantool(filter Filter) (users []UserTarantool, err error) {
-	err = tar.Client("0").CallTyped("get_users", []interface{}{filter.FirstName, filter.LastName}, &users)
+	err = tar.Client("0").CallTyped(
+		"get_users",
+		[]interface{}{filter.FirstName, filter.LastName},
+		&users)
 
 	if len(users) == 1 && users[0].Id == 0 {
 		users = []UserTarantool{}

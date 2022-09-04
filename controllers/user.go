@@ -22,8 +22,8 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 		LastName:  r.FormValue("last_name"),
 	}
 
-	//userList, err := users.GetUsers(filter)
-	userList, err := users.GetUsersTarantool(filter)
+	userList, err := users.GetUsers(filter)
+	//userList, err := users.GetUsersTarantool(filter)
 	if err != nil {
 		responses.Response500(w, err)
 	}
