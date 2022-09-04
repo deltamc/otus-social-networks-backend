@@ -60,11 +60,7 @@ box.space.test1:create_index('primary', {
 	type = 'HASH',
 	parts = {1, 'unsigned'}
 });
---
---
-s:insert{10000000000, 'first_name', 'last_name', 25, 1, 'fdsafdasfds','Moscow'}
-local sp = box.space._space.index.name:select{ 'users' }
-print(sp[1])
+
 
 function get_users(first_name, last_name)
     if first_name ~= "" and last_name ~= "" then
